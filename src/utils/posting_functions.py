@@ -1,10 +1,15 @@
+import asyncio
+
+import numpy as np
 import pandas as pd
 import requests
-import time
 from datetime import datetime, timedelta
+from aiogram.types import Message
+
+from config import Config
 
 
-def post_tiktok_video(post_time: str, channel_id: str, description: str, video_url: str):
+async def post_tiktok_video(post_time: str, channel_id: str, description: str, video_url: str):
     postiz_post_url = 'https://api.postiz.com/public/v1/posts'
     data = {
         "type": "schedule",
@@ -42,30 +47,24 @@ def post_tiktok_video(post_time: str, channel_id: str, description: str, video_u
         ],
     }
     headers = {
-        'Authorization': 'f2714674eee51183c7660db056a9f531674dfc3923b33520d6bd9694ff0f2e14',
+        'Authorization': Config.POSTIZ_API_KEY,
         'Content-Type': 'application/json'
     }
     response = requests.post(postiz_post_url, json=data, headers=headers)
     return response.status_code
 
 
-def test_unpack_csv_and_upload_video(file_csv: str):
-    """
-    This function unpacks csv file and upload videos to postiz
-    """
-
-
-def post_videos_from_csv(file_path):
+async def post_videos_from_csv(file_path: str, message_from_user: Message):
     """
     Function reads csv file and posts videos.
     Due to the postiz limit (30 api requests an hour), there is limitation to wait next hour
     """
-    def wait_until_next_hour():
+    async def wait_until_next_hour():
         now = datetime.now()
         next_hour = (now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1))
         wait_seconds = (next_hour - now).total_seconds()
-        print(f"Ошибка, ждем {wait_seconds} секунд до начала нового часа...")
-        time.sleep(wait_seconds)
+        await message_from_user.answer('Было запощено 30 видео. Нужно подождать следующий час.')
+        await asyncio.sleep(wait_seconds)
 
     while True:
         df = pd.read_csv(file_path)
@@ -83,12 +82,12 @@ def post_videos_from_csv(file_path):
             video_url = row['video_url']
 
             # post video
-            result_status = post_tiktok_video(post_time, channel_id, description, video_url)
+            result_status = await post_tiktok_video(post_time, channel_id, description, video_url)
             row_index_to_drop.append(idx)
 
             if result_status == 429:
                 print('Postiz limit was exceeded. Need to wait next hour.')
-                wait_until_next_hour()
+                await wait_until_next_hour()
             # After waiting, interrupt the current cycle to reread the file
             break
 
