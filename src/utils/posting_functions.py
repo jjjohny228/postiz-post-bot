@@ -33,7 +33,7 @@ async def post_tiktok_video(post_time: str, channel_id: str, description: str, v
                 ],
                 "settings": {
                     "__type": "tiktok",
-                    "privacy_level": "SELF_ONLY", # после авторизации заменить на PUBLIC_TO_EVERYONE, SELF_ONLY
+                    "privacy_level": "PUBLIC_TO_EVERYONE", # после авторизации заменить на PUBLIC_TO_EVERYONE, SELF_ONLY
                     "duet": "false",
                     "stitch": "false",
                     "comment": "true",
