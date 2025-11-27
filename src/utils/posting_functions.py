@@ -1,6 +1,5 @@
 import asyncio
 
-import numpy as np
 import pandas as pd
 import requests
 from datetime import datetime, timedelta
@@ -78,7 +77,7 @@ async def post_videos_from_csv(file_path: str, message_from_user: Message):
         for idx, row in df.iterrows():
             post_time = row['post_time']
             channel_id = row['channel_id']
-            description = row['title'] if not np.isnan(row['title']) else ''
+            description = row['title'] if not pd.isna(row['title']) else ''
             video_url = row['video_url']
 
             # post video
