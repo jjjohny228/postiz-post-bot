@@ -60,7 +60,7 @@ async def post_videos_from_csv(file_path: str, message_from_user: Message):
     """
     async def wait_until_next_hour():
         now = datetime.now()
-        next_hour = (now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1))
+        next_hour = (now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1, minutes=10))
         wait_seconds = (next_hour - now).total_seconds()
         await message_from_user.answer('Было запощено 30 видео. Нужно подождать следующий час.')
         await asyncio.sleep(wait_seconds)
