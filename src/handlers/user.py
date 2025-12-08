@@ -5,7 +5,7 @@ from aiogram import types
 from aiogram import Dispatcher
 from aiogram.dispatcher.filters import CommandStart
 
-from src.utils import post_videos_from_csv
+from src.utils import ApostolVideoUploader
 
 async def handle_start_command(message: types.Message) -> None:
     await message.answer(
@@ -28,7 +28,7 @@ async def handle_csv_file(message: types.Message):
 
     # Вызываем вашу функцию обработки CSV файла (предположим, она асинхронная)
     try:
-        await post_videos_from_csv(download_path, message)
+        await ApostolVideoUploader().upload_video(download_path, message)
         await message.answer("Файл успешно обработан.")
     except Exception as e:
         await message.answer(f"Произошла ошибка при обработке файла: {str(e)}")
